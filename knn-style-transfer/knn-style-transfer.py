@@ -88,14 +88,14 @@ def rebuild(file_name, size=block_size):
     return photo
 
 
-
+# 从梵高的风格图像构建训练数据集
 X, Y = create_dataset("./vangogh-style/")
 
 # 训练KNN回归模型
 nbrs = KNeighborsRegressor(n_neighbors=4, weights='distance')
 nbrs.fit(X, Y)
 
-# 生成图像
+# 图像重建（风格迁移）
 new_photo = rebuild("./input.jpg")
 
 # 保存输出图像
@@ -104,4 +104,3 @@ plt.imsave("output.jpg", lab2rgb(new_photo))
 # 打印输出图像
 plt.imshow(lab2rgb(new_photo))
 plt.show()
-print(new_photo.shape)
