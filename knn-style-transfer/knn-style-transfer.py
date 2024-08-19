@@ -71,10 +71,8 @@ def rebuild(file_name, size=block_size):
 
     # 调用kNN模型的predict方法，对于输入的一系列3*3灰度矩阵X，求得其各自对应的色彩的回归值
     # 调用reshape方法将输出的色彩值调整到图片对应的维度
-    print("predicting...")
     p_ab = nbrs.predict(X)
     p_ab = p_ab.reshape(w - 2 * size, h - 2 * size, -1)
-    print("finish predicting.", p_ab.shape)
 
     # 根据预测结果，调整内容图片的ab通道值
     for x in range(size, w - size):
@@ -85,7 +83,7 @@ def rebuild(file_name, size=block_size):
             photo[x, y, 1] = p_ab[x - size, y - size, 0]
             photo[x, y, 2] = p_ab[x - size, y - size, 1]
 
-    # 最外圈无法作为中心点，因此不赋值（黑框？）
+    # 最外圈无法作为中心点，裁切掉
     photo = photo[size: w - size, size: h - size, :]
     return photo
 
