@@ -14,8 +14,6 @@ block_size = 1
 # Y: 储存中心像素格的色彩值
 def read_style_image(file_name, size=block_size):
     img = io.imread(file_name)
-    # plt.imshow(img)
-    # plt.show()
 
     img = rgb2lab(img)
 
@@ -42,42 +40,21 @@ def read_style_image(file_name, size=block_size):
             Y.append(img[x, y, 1:])
     return X, Y
 
-
-def create_dataset(data_dir, number):
+# 将所有风格图像的 X -> Y 映射整合为训练数据
+def create_dataset(data_dir):
     X = []
     Y = []
-    n = 0
     for file in os.listdir(data_dir):
         X0, Y0 = read_style_image(os.path.join(data_dir, file))
         X.extend(X0)
         Y.extend(Y0)
-        n += 1
-        if n >= number:
-            break
+
     return X, Y
 
 
-# 调用构建映射数据集的函数
-# 风格图像文件夹路径
-# 读取风格图像文件夹中的number张图像，这里number=1
-# 输出由风格图像构建的映射数据集
-print("reading...")
-X, Y = create_dataset("./vangogh-style/", 1)
-print("finish reading.")
-
-# 训练KNN回归模型
-print("fitting...")
-nbrs = KNeighborsRegressor(n_neighbors=4, weights='distance')
-nbrs.fit(X, Y)
-print("finish fitting")
-
 # 输入内容图像，根据已经建立好的kNN模型，输出色彩风格迁移后的图像。
-
-
 def rebuild(file_name, size=block_size):
     img = io.imread(file_name)
-    # plt.imshow(img)
-    # plt.show()
 
     img = rgb2lab(img)
     w, h = img.shape[:2]
@@ -113,14 +90,20 @@ def rebuild(file_name, size=block_size):
     return photo
 
 
+
+X, Y = create_dataset("./vangogh-style/")
+
+# 训练KNN回归模型
+nbrs = KNeighborsRegressor(n_neighbors=4, weights='distance')
+nbrs.fit(X, Y)
+
 # 生成图像
 new_photo = rebuild("./input.jpg")
-rgb_new_photo = lab2rgb(new_photo)
 
 # 保存输出图像
-plt.imsave("output.jpg", rgb_new_photo)
+plt.imsave("output.jpg", lab2rgb(new_photo))
 
 # 打印输出图像
-plt.imshow(rgb_new_photo)
+plt.imshow(lab2rgb(new_photo))
 plt.show()
 print(new_photo.shape)
