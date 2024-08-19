@@ -55,7 +55,9 @@ def create_dataset(data_dir):
 # 输入内容图像，根据已经建立好的kNN模型，输出色彩风格迁移后的图像。
 def rebuild(file_name, size=block_size):
     img = io.imread(file_name)
-
+    plt.imshow(img)
+    plt.show()
+    
     img = rgb2lab(img)
     w, h = img.shape[:2]
 
